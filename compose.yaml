@@ -1,0 +1,54 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MGMT_HOST_PORT}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  submit:
+    build:
+      context: ./submit-app
+    container_name: submit
+    restart: unless-stopped
+    env_file: .env
+    environment:
+
+      ## PUT THESE IN MAIN .ENV
+      
+      # url to joke service - sync calls
+      JOKE_BASE_URL: http://${VM1_PRIVATE_IP}:${JOKES_CONTAINER_PORT}
+
+      # rabbitmq connection details - async calls
+      AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
+      QUEUE_NAME: ${QUEUE_NAME}
+
+      # port
+      PORT: ${SUBMIT_CONTAINER_PORT}
+
+      # file cache path inside container - mounted volume
+      TYPES_CACHE_PATH: /cache/typeCache.json
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "${SUBMIT_PORT_INTERNAL}:${SUBMIT_CONTAINER_PORT}"
+    volumes:
+      - submit_types_cache:/cache
+
+
+volumes:
+  rabbitmq_data:
+  submit_types_cache:
