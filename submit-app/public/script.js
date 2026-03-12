@@ -59,7 +59,7 @@ form.addEventListener('submit', async (e) => {
 
     // send data to server
     try {
-        const response = await fetch('/submitQueue', {
+        const response = await fetch('/submit-api/submitQueue', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
