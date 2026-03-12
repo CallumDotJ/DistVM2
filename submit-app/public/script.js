@@ -13,7 +13,7 @@ async function loadTypes()
     const select = typeSelect;
 
     try{
-        const response = await fetch("/types") //fetch
+        const response = await fetch("/submit-api/types") //fetch
         const types = await response.json();
 
         select.innerHTML = '<option value="">Select a type</option>'; //clear all besides placeholder
