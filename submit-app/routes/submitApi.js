@@ -266,6 +266,8 @@ async function createConnection(conStr) {
     const channel = await connection.createChannel(); // create a channel withing the connection. Can have many concurrent channels   // Create channel. Channel can have multiple queues
     console.log(`Channel created`);
 
+    await channel.assertExchange(EXCHANGE, "fanout", { durable: true });
+
     const q = await channel.assertQueue(TYPE_CONSUME_QUEUE, { durable: true });
     await channel.bindQueue(q.queue, EXCHANGE, ""); // bind the q to the exchange for subscription
     await channel.prefetch(1); // Only send the next message when the current is acknowledged
