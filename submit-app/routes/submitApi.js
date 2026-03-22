@@ -17,6 +17,8 @@ const TYPE_CONSUME_QUEUE =
   process.env.TYPE_CONSUME_QUEUE || "type_consume_queue";
 const EXCHANGE = "type_update_exchange";
 
+const CONSTR = process.env.AMQP_URL || "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}"
+
 // Misc
 const JOKE_BASE_URL = process.env.JOKE_BASE_URL || "http://localhost:3001";
 const TYPES_CACHE_PATH =
@@ -222,13 +224,15 @@ router.post("/submitQueue", async (req, res) => {
 /* --- Functions --- */
 
 async function createQueueConnection() {
-  const conStr = `amqp://${RMQ_USER_NAME}:${RMQ_PASSWORD}@${RMQ_HOST}:${RMQ_PORT}/`;
+  //const conStr = `amqp://${RMQ_USER_NAME}:${RMQ_PASSWORD}@${RMQ_HOST}:${RMQ_PORT}/`;
+
+  
   for (let i = 0; i < 5 && !gConnection; i++) {
     await new Promise((resolve) => setTimeout(resolve, 2000)); // wait before retrying connection - give rmq time to start
 
     try {
       console.log(`Trying to connect to RabbitMQ at ${RMQ_HOST}:${RMQ_PORT}`); // REMOVE AFTER TESTS
-      const rmq = await createConnection(conStr);
+      const rmq = await createConnection(CONSTR);
       gConnection = rmq.connection;
       gChannel = rmq.channel;
 
@@ -266,6 +270,7 @@ async function createConnection(conStr) {
     const channel = await connection.createChannel(); // create a channel withing the connection. Can have many concurrent channels   // Create channel. Channel can have multiple queues
     console.log(`Channel created`);
 
+    
     await channel.assertExchange(EXCHANGE, "fanout", { durable: true });
 
     const q = await channel.assertQueue(TYPE_CONSUME_QUEUE, { durable: true });
