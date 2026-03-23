@@ -17,7 +17,7 @@ const TYPE_CONSUME_QUEUE =
   process.env.TYPE_CONSUME_QUEUE || "type_consume_queue";
 const EXCHANGE = "type_update_exchange";
 
-const CONSTR = process.env.AMQP_URL || "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}"
+const CONSTR = process.env.AMQP_URL || `amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}`
 
 // Misc
 const JOKE_BASE_URL = process.env.JOKE_BASE_URL || "http://localhost:3001";
