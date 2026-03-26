@@ -113,6 +113,8 @@ router.post("/submit", async (req, res) => {
 
     await sendMsg(gChannel, msg); // send the joke to queue.
 
+    console.log("past send message")
+
     res.json({ message: "joke submitted to queue successfully" });
   } catch (error) {
     // error submitting
