@@ -6,11 +6,13 @@ const { readCache, writeCache } = require("../utils/cacheHelpers");
 const swaggerSpec = require("../swagger");
 const swaggerUi = require("swagger-ui-express");
 
+// RMQ Connections
 const QUEUE_NAME = process.env.QUEUE_NAME || "submit_queue";
 const TYPE_CONSUME_QUEUE =
   process.env.TYPE_CONSUME_QUEUE || "submit_type_consume_queue";
 const EXCHANGE = "type_update_exchange";
 
+// Connection String for RMQ
 const CONSTR =
   process.env.AMQP_URL ||
   `amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}`;
