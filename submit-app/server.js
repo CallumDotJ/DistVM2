@@ -23,7 +23,7 @@ app.use('/', submitApiRouter);
  *       200:
  *         description: Swagger UI
  */
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+//app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server is running on port ${PORT}`);

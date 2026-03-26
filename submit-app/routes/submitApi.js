@@ -113,6 +113,8 @@ router.post("/submit", async (req, res) => {
       .json({ error: "error processing submission - queue error" });
   }
 });
+
+router.get('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  
 // --  RABBITMQ BASED FUNCTIONS  -- \\
 
