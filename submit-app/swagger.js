@@ -9,7 +9,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://158.158.35.176/submit-api",
+        url: "https://158.158.35.176/submit-api", // using kong
       },
     ],
   },

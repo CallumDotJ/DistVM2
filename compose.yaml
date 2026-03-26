@@ -6,11 +6,9 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-
-      ## PUT THESE IN MAIN .ENV
       
       # url to joke service - sync calls
-      JOKE_BASE_URL: http://${JOKE_PRIVATE_IP}:${JOKES_CONTAINER_PORT}
+      #JOKE_BASE_URL: http://${JOKE_PRIVATE_IP}:${JOKES_CONTAINER_PORT}
 
       # rabbitmq connection details - async calls
       AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
@@ -24,6 +22,8 @@ services:
 
     ports:
       - "${SUBMIT_PORT_INTERNAL}:${SUBMIT_CONTAINER_PORT}"
+
+      # Caching 
     volumes:
       - submit_types_cache:/cache
 

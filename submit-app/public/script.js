@@ -40,7 +40,7 @@ form.addEventListener('submit', async (e) => {
 
     // determine type based on checkbox
     const useNewType = newTypeCheckbox.checked; // use new type if checkbox is checked
-    const type = useNewType ? newTypeInput.value.trim().toLowerCase() : typeSelect.value.trim().toLowerCase(); 
+    const type = useNewType ? newTypeInput.value.trim().toLowerCase() : typeSelect.value.trim().toLowerCase(); // inline to decide which to use 
 
     // validation of type
     if(useNewType && type.length < 3) { 
@@ -54,9 +54,6 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
-    // temp test to see data 
-    msg.textContent = `OK: ${setup} / ${punchline} / ${type}`;
-
     // send data to server
     try {
         const response = await fetch('/submit-api/submit', {
@@ -66,8 +63,10 @@ form.addEventListener('submit', async (e) => {
             },
             body: JSON.stringify({ setup, punchline, type })
         });
+
         const result = await response.json();
         msg.textContent = result.message || "submission failed";
+
     } 
     catch (error) {
         console.error("error submitting joke:", error);
