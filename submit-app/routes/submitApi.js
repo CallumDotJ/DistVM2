@@ -3,8 +3,8 @@ const router = express.Router();
 const path = require("path");
 const amqp = require("amqplib");
 const { readCache, writeCache } = require("../utils/cacheHelpers");
-const swaggerSpec = require('../swagger');
-const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require("../swagger");
+const swaggerUi = require("swagger-ui-express");
 
 const QUEUE_NAME = process.env.QUEUE_NAME || "submit_queue";
 const TYPE_CONSUME_QUEUE =
@@ -101,34 +101,40 @@ router.post("/submit", async (req, res) => {
       });
     }
 
+    // stops sending too early
+    if (!gChannel) {
+      return res.status(503).json({
+        error: "queue unavailable - rabbitmq connection not ready",
+      });
+    }
+
     // send to queue
     let msg = { setup: setup, punchline: punchline, type: type };
 
     await sendMsg(gChannel, msg); // send the joke to queue.
 
     res.json({ message: "joke submitted to queue successfully" });
-  } catch (error) 
-  { 
+  } catch (error) {
     // error submitting
     console.error("post /submit error:", error);
-    res.status(500)
+    res
+      .status(500)
       .json({ error: "error processing submission - queue error" });
   }
 });
 
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
- 
+router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // --  RABBITMQ BASED FUNCTIONS  -- \\
 
 // attempt the connection  and save into the assigned gloabl variables
 async function createQueueConnection() {
-
-  for (let i = 0; i < 5 && !gConnection; i++) { // attempt connect 
+  for (let i = 0; i < 5 && !gConnection; i++) {
+    // attempt connect
 
     await new Promise((resolve) => setTimeout(resolve, 2000)); // use promise to wait before retrying connection - give rmq time to start
 
     try {
-
       // connect and save
       const rmq = await createConnection(CONSTR);
       gConnection = rmq.connection;
@@ -141,8 +147,7 @@ async function createQueueConnection() {
       gConnection.on("close", () => {
         console.log(`Connection closed`);
       });
-    } catch (err) 
-    {
+    } catch (err) {
       console.log(`Failed to connect to RabbitMQ: ${err.message}`);
     }
   }
@@ -151,10 +156,10 @@ async function createQueueConnection() {
 // create connection to rmq and connect to queues and exchange
 async function createConnection(conStr) {
   try {
-    const connection = await amqp.connect(conStr); // create the tcp connection   
+    const connection = await amqp.connect(conStr); // create the tcp connection
     console.log(`Connected to rabbitmq using ${conStr}`);
 
-    const channel = await connection.createChannel(); // create a channel within the connection. 
+    const channel = await connection.createChannel(); // create a channel within the connection.
     console.log(`Channel created`);
 
     // subscribe to exchange
@@ -170,7 +175,7 @@ async function createConnection(conStr) {
     await channel.consume(q.queue, async (msg) => {
       if (!msg) return;
 
-      // validate first 
+      // validate first
       try {
         // temp obj for extract
         const obj = JSON.parse(msg.content.toString());
@@ -181,8 +186,7 @@ async function createConnection(conStr) {
           console.log("invalid structure of TYPES - not array format.");
           channel.ack(msg); // remove from queue
           return;
-        } 
-
+        }
 
         // save to cache
         await writeCache(TYPES_CACHE_PATH, types);
@@ -205,7 +209,6 @@ async function createConnection(conStr) {
 
 // send message to queue - takes the channel and the to be inputted message
 async function sendMsg(channel, msg) {
-
   try {
     // ensure queue
     const res = await channel.assertQueue(QUEUE_NAME, { durable: true });
@@ -216,8 +219,7 @@ async function sendMsg(channel, msg) {
       persistent: true,
     });
     console.log(msg);
-  } catch (err) 
-  {
+  } catch (err) {
     console.log(`Failed to write to ${QUEUE_NAME} queue.${err}`);
     throw err;
   }
