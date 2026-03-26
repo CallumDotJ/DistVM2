@@ -6,7 +6,7 @@ const { readCache, writeCache } = require("../utils/cacheHelpers");
 
 const QUEUE_NAME = process.env.QUEUE_NAME || "submit_queue";
 const TYPE_CONSUME_QUEUE =
-  process.env.TYPE_CONSUME_QUEUE || "type_consume_queue";
+  process.env.TYPE_CONSUME_QUEUE || "submit_type_consume_queue";
 const EXCHANGE = "type_update_exchange";
 
 const CONSTR =
@@ -79,57 +79,6 @@ router.get("/types", async (req, res) => {
  *         description: Validation error
  */
 
-// REMOVE  THIS ONEEEEE
-/* router.post("/submit", async (req, res) => {
-  try {
-    // read inputs
-    const setup = req.body.setup.trim();
-    const punchline = req.body.punchline.trim();
-    const type = req.body.type.trim().toLowerCase();
-
-    // validate
-    if (!setup || !punchline || !type) {
-      return res
-        .status(400)
-        .json({ error: "please provide setup punchline and type" });
-    }
-
-    if (setup.length < 3 || punchline.length < 3 || type.length < 3) {
-      return res
-        .status(400)
-        .json({ error: "setup punchline type must be at least 3 characters" });
-    }
-
-    // check if type exists, if not add it - retrive id too
-    let rows = await query(
-      `SELECT id FROM tbl_type WHERE LOWER(type) = LOWER(?) LIMIT 1`,
-      [type],
-    );
-
-    let typeId;
-
-    if (rows.length === 0) {
-      const result = await query(`INSERT INTO tbl_type (type) VALUES (?)`, [
-        type,
-      ]);
-      typeId = result.insertId; // get new type id
-    } else {
-      typeId = rows[0].id; // get existing type id
-    }
-
-    // insert joke with type id
-    await query(
-      `INSERT INTO tbl_jokes (setup, punchline, type) VALUES (?, ?, ?)`,
-      [setup, punchline, typeId],
-    );
-    // respond to front
-    res.json({ message: "joke submitted successfully" });
-  } catch (error) {
-    console.error("post submit error:", error);
-    res.status(500).json({ error: "error processing submission - db error" });
-  }
-});
- */
 router.post("/submit", async (req, res) => {
   // queue submission endpoint - accepts same input but sends to queue
 
@@ -138,7 +87,6 @@ router.post("/submit", async (req, res) => {
     const setup = req.body.setup.trim();
     const punchline = req.body.punchline.trim();
     const type = req.body.type.trim().toLowerCase();
-
 
     // validate exist and not whiespace
     if (
@@ -150,7 +98,6 @@ router.post("/submit", async (req, res) => {
         error: "fields cannot be empty",
       });
     }
-
 
     // send to queue
     let msg = { setup: setup, punchline: punchline, type: type };
@@ -196,17 +143,6 @@ async function createQueueConnection() {
     }
   }
 }
-
-// close the queue connection
-/* async function closeConnection(connection, channel) {
-  try {
-    await channel.close();
-    await connection.close();
-    console.log(`Connection and channel closed`);
-  } catch (err) {
-    console.log(`Failed to close connection. ${err}`);
-  }
-} */
 
 // create connection to rmq and connect to queues and exchange
 async function createConnection(conStr) {
