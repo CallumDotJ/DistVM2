@@ -8,7 +8,7 @@ const options = {
       version: "1.0.0",
     },
   },
-  apis: ["./routes/*.js", "server.js"], // MUST be an ARRAY
+  apis: ["./routes/*.js", "server.js"], // Has to be array
 };
 
 module.exports = swaggerJsdoc(options);

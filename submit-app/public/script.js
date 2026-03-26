@@ -7,7 +7,7 @@ const newTypeWrapper = document.getElementById('newTypeWrapper');
 
 /* Types Loaders */
 
-//load types into the select menu
+// Load types into the select menu
 async function loadTypes()
 {
     const select = typeSelect;
@@ -31,7 +31,7 @@ async function loadTypes()
     }
 }
 
-
+// Submit event listener
 form.addEventListener('submit', async (e) => {
     e.preventDefault(); // prevent default form submission
 
@@ -59,7 +59,7 @@ form.addEventListener('submit', async (e) => {
 
     // send data to server
     try {
-        const response = await fetch('/submit-api/submitQueue', {
+        const response = await fetch('/submit-api/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
