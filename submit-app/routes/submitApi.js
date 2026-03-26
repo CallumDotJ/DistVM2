@@ -116,7 +116,7 @@ router.post("/submit", async (req, res) => {
   }
 });
 
-router.get('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  
 // --  RABBITMQ BASED FUNCTIONS  -- \\
 
