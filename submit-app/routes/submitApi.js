@@ -133,7 +133,7 @@ router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // attempt the connection  and save into the assigned gloabl variables
 async function createQueueConnection() {
-  for (let i = 0; i < 5 && !gConnection; i++) {
+  while (true) {
     // attempt connect
 
     await new Promise((resolve) => setTimeout(resolve, 2000)); // use promise to wait before retrying connection - give rmq time to start
