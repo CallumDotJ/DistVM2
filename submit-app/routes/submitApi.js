@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require("path");
 const amqp = require("amqplib");
 const { readCache, writeCache } = require("../utils/cacheHelpers");
-const swaggerSpec = require('./swagger');
+const swaggerSpec = require('../swagger');
 const swaggerUi = require('swagger-ui-express');
 
 const QUEUE_NAME = process.env.QUEUE_NAME || "submit_queue";
